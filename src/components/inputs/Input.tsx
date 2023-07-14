@@ -45,13 +45,13 @@ const Input = ({
         type={type}
         disabled={disabled}
         name={field.name}
-        value={field.value}
+        value={field.value || ""}
         onChange={field.onChange}
         id={`${name}-input`}
       />
       <label
         htmlFor={`${name}-input`}
-        className="absolute pointer-cursor duration-150 scale-[0.85] left-4 top-1 origin-[0] text-zinc-400 peer-placeholder-shown:scale-[1.05] peer-placeholder-shown:top-5 peer-placeholder-shown:left-4 peer-placeholder-shown:text-zinc-400 peer-focus:top-1 peer-focus:scale-75 peer-focus:left-4 peer-focus:text-black"
+        className="absolute pointer-cursor duration-150 scale-[0.85] left-4 top-1 origin-[0] text-zinc-400 cursor-text peer-placeholder-shown:scale-[1.05] peer-placeholder-shown:top-5 peer-placeholder-shown:left-4 peer-placeholder-shown:text-zinc-400 peer-focus:top-1 peer-focus:scale-75 peer-focus:left-4 peer-focus:text-black"
       >
         {label}
       </label>

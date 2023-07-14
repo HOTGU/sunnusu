@@ -1,23 +1,27 @@
 "use client";
 
 import React, { useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
 
-import Modal from "./Modal";
 import useUploadModal from "@/hooks/useUploadModal";
+import Modal from "./Modal";
 import Input from "../inputs/Input";
 import Textarea from "../inputs/Textarea";
 import File from "../inputs/File";
-import { toast } from "react-hot-toast";
-import axios from "axios";
 
 const UploadModal = () => {
   const uploadModal = useUploadModal();
+  const router = useRouter();
   const [files, setFiles] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
   const {
     control,
     formState: { errors },
     handleSubmit,
+    reset,
   } = useForm<FieldValues>({
     defaultValues: {
       title: "",
@@ -37,22 +41,33 @@ const UploadModal = () => {
     fd.append("metaDesc", data.metaDesc);
     fd.append("metaKeywords", data.metaKeywords);
 
-    // if (files.length > 0) {
-    //   for (let i = 0; i < files.length; i++) {
-    //     fd.append("images", files[i]);
-    //   }
-    // }
-
-    try {
-      const res = await axios.post("/api/post", fd);
-
-      console.log(res);
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.log(error);
+    if (files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        fd.append("images", files[i], files[i].name);
       }
-      toast.error("error");
     }
+
+    const loadingToast = toast.loading("생성중..");
+    setLoading(true);
+
+    axios
+      .post("/api/post", fd)
+      .then(() => {
+        toast.success("생성성공", { id: loadingToast });
+        reset();
+        setFiles([]);
+        uploadModal.onClose();
+        router.refresh();
+      })
+      .catch((error) => {
+        if (process.env.NODE_ENV === "development") {
+          console.log(error);
+        }
+        toast.error("생성실패", { id: loadingToast });
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const body = (
@@ -65,6 +80,7 @@ const UploadModal = () => {
             required
             label="제목"
             name="title"
+            disabled={loading}
           />
           <Textarea
             control={control}
@@ -72,6 +88,7 @@ const UploadModal = () => {
             required
             label="본문"
             name="desc"
+            disabled={loading}
           />
         </div>
         <div className="flex-1 space-y-4">
@@ -80,6 +97,7 @@ const UploadModal = () => {
             errors={errors}
             required
             label="SEO제목"
+            disabled={loading}
             name="metaTitle"
           />
           <Input
@@ -87,6 +105,7 @@ const UploadModal = () => {
             errors={errors}
             required
             label="SEO본문"
+            disabled={loading}
             name="metaDesc"
           />
           <Input
@@ -95,10 +114,11 @@ const UploadModal = () => {
             required
             label="SEO키워드"
             name="metaKeywords"
+            disabled={loading}
           />
         </div>
       </div>
-      <File files={files} setFiles={setFiles} multiple />
+      <File files={files} setFiles={setFiles} multiple disabled={loading} />
     </div>
   );
 
@@ -110,6 +130,7 @@ const UploadModal = () => {
       actionLabel="제출"
       onSubmit={handleSubmit(onSubmit)}
       onClose={uploadModal.onClose}
+      disabled={loading}
     />
   );
 };

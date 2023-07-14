@@ -19,12 +19,12 @@ model User {
 
 model Post {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  thumb String
   images String[]
   title String
   desc String
-
-  metadata Metadata?
+   
+  metadata Metadata @relation(fields: [metadataId], references: [id], onDelete: Cascade)
+  metadataId String @unique @db.ObjectId
 }
 
 model Metadata {
@@ -33,8 +33,5 @@ model Metadata {
   desc String
   keywords String
 
-  post Post @relation(fields: [postId], references: [id], onDelete: Cascade)
-  postId String @unique @db.ObjectId
+  post Post?
 }
-
-

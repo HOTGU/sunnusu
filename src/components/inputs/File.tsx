@@ -1,6 +1,12 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useRef, useState } from "react";
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useRef,
+  useState,
+} from "react";
 import compressFile from "@/actions/compressFile";
 import { FaTimes } from "react-icons/fa";
 
@@ -46,13 +52,20 @@ const File = ({ files, setFiles, disabled, multiple }: FileProps) => {
     setFiles(deletedFiles);
   };
 
+  const onClick = useCallback(() => {
+    if (disabled) {
+      return;
+    }
+    ref.current?.click();
+  }, [disabled]);
+
   return (
     <div>
       <span
-        onClick={() => ref.current?.click()}
+        onClick={onClick}
         className={`border text-zinc-400 p-4 rounded-md cursor-pointer hover:opacity-70 transition ${
-          loading && "animate-pulse bg-zinc-200"
-        }`}
+          (loading || disabled) && "animate-pulse bg-zinc-200"
+        } `}
       >
         {loading ? "압축중.." : "사진선택"}
       </span>

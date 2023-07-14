@@ -4,6 +4,8 @@ import { redirect } from "next/navigation";
 import getCurrentUser from "@/actions/getCurrentUser";
 import Container from "@/components/Container";
 import UploadModal from "@/components/modals/UploadModal";
+import DeleteConfirm from "@/components/confirms/DeleteConfirm";
+import UpdateModal from "@/components/modals/UpdateModal";
 
 export default async function RootLayout({
   children,
@@ -21,7 +23,9 @@ export default async function RootLayout({
           홈페이지로 돌아가기
         </nav>
       </Link>
+      <UpdateModal />
       <UploadModal />
+      <DeleteConfirm />
       {children}
     </Container>
   );
